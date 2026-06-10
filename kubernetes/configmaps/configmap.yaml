@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bank-config
+  namespace: bank
+data:
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  POSTGRES_DB: "bankdb"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  REDIS_URL: "redis://redis-service:6379/0"
+  DATABASE_URL: "postgresql+asyncpg://bankadmin:bankpass123@postgres-service:5432/bankdb"
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  ACCOUNT_SERVICE_URL: "http://account-service:8000"
+  TRANSACTION_SERVICE_URL: "http://transaction-service:8000"
+  AI_SERVICE_URL: "http://ai-service:8000"
+  NOTIFICATION_SERVICE_URL: "http://notification-service:8000"

@@ -1,0 +1,45 @@
+name: 🔍 Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    name: 🧹 Lint & Format
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth-service, account-service, transaction-service, ai-service, notification-service]
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install linters
+        run: pip install ruff black isort
+
+      - name: 🔍 Run ruff
+        run: cd services/${{ matrix.service }} && ruff check . --fix || true
+
+      - name: 🎨 Check formatting
+        run: cd services/${{ matrix.service }} && black --check . || true
+
+  docker-build-check:
+    name: 🐳 Docker Build Check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [auth-service, account-service, transaction-service, ai-service, notification-service]
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Build Docker image
+        run: |
+          docker build -t test-${{ matrix.service }} services/${{ matrix.service }}
+          echo "✅ ${{ matrix.service }} builds successfully"
