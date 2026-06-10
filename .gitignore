@@ -1,0 +1,12 @@
+.env
+.env.local
+__pycache__/
+*.pyc
+.venv/
+venv/
+mobile/.dart_tool/
+mobile/build/
+*.log
+.vscode/
+.idea/
+.DS_Store
