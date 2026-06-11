@@ -1,0 +1,201 @@
+openapi: 3.0.3
+info:
+  title: AI Banking Platform API
+  description: Plateforme bancaire moderne avec IA integree
+  version: 1.0.0
+  contact:
+    name: AI Banking Platform
+    url: https://github.com/Issamhot69/ai-banking-platform
+
+servers:
+  - url: http://localhost:80/api/v1
+    description: Local Development
+
+security:
+  - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, password, first_name, last_name]
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@bank.com
+        password:
+          type: string
+          minLength: 8
+          example: Test@1234
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          example: bearer
+        expires_in:
+          type: integer
+          example: 1800
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        kyc_status:
+          type: string
+          enum: [pending, approved, rejected]
+        is_2fa_enabled:
+          type: boolean
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Inscription
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              ref: RegisterRequest
+      responses:
+        '201':
+          description: Utilisateur cree
+        '400':
+          description: Email deja utilise
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Connexion
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion reussie
+        '401':
+          description: Identifiants incorrects
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Profil utilisateur
+      responses:
+        '200':
+          description: Profil utilisateur
+
+  /accounts:
+    get:
+      tags: [Accounts]
+      summary: Mes comptes
+      responses:
+        '200':
+          description: Liste des comptes
+    post:
+      tags: [Accounts]
+      summary: Creer un compte
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_type:
+                  type: string
+                  enum: [checking, savings, business]
+                currency:
+                  type: string
+                  enum: [EUR, USD, GBP, MAD, CHF]
+      responses:
+        '201':
+          description: Compte cree
+
+  /transactions/transfer:
+    post:
+      tags: [Transactions]
+      summary: Virement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [from_account_id, to_account_id, amount]
+              properties:
+                from_account_id:
+                  type: string
+                  format: uuid
+                to_account_id:
+                  type: string
+                  format: uuid
+                amount:
+                  type: number
+                  maximum: 50000
+                currency:
+                  type: string
+                  default: EUR
+      responses:
+        '201':
+          description: Virement effectue
+        '400':
+          description: Solde insuffisant
+
+  /ai/chat:
+    post:
+      tags: [AI]
+      summary: Chatbot bancaire Claude
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Quel est mon solde ?
+                conversation_history:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Reponse du chatbot

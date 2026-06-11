@@ -1,0 +1,163 @@
+{
+  "info": {
+    "name": "AI Banking Platform",
+    "description": "Collection complete pour tester l'AI Banking Platform API",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:80/api/v1"},
+    {"key": "access_token", "value": ""},
+    {"key": "refresh_token", "value": ""},
+    {"key": "account_id", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/register",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"email\": \"user@bank.com\", \"password\": \"Test@1234\", \"first_name\": \"John\", \"last_name\": \"Doe\"}"}
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/login",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"email\": \"user@bank.com\", \"password\": \"Test@1234\"}"}
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/auth/me",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}]
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/logout",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/accounts",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\"account_type\": \"checking\", \"currency\": \"EUR\"}"}
+          }
+        },
+        {
+          "name": "Get My Accounts",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/accounts",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Transfer",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/transactions/transfer",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\"from_account_id\": \"{{account_id}}\", \"to_account_id\": \"DEST_ID\", \"amount\": 100.00, \"currency\": \"EUR\"}"}
+          }
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/transactions?account_id={{account_id}}&page=1&per_page=20",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}]
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Chat",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/ai/chat",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\"message\": \"Quel est mon solde ?\", \"conversation_history\": []}"}
+          }
+        },
+        {
+          "name": "Credit Score",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/ai/credit-score",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\"user_id\": \"user123\", \"monthly_income\": 3000, \"payment_history_score\": 0.9, \"credit_utilization\": 0.2, \"months_account_open\": 24}"}
+          }
+        },
+        {
+          "name": "Fraud Check",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/ai/fraud/check",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{access_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\"account_id\": \"{{account_id}}\", \"amount\": 5000, \"transaction_type\": \"transfer\"}"}
+          }
+        },
+        {
+          "name": "AI Status",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/ai/status",
+            "header": [{"key": "Authorization", "value": "Bearer {{access_token}}"}]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "request": {"method": "GET", "url": "http://localhost:80/health"}
+        }
+      ]
+    }
+  ]
+}
