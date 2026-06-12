@@ -40,7 +40,7 @@ class AppTheme {
       titleTextStyle: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
       iconTheme: IconThemeData(color: AppColors.textPrimary),
     ),
-    cardTheme: CardTheme(color: AppColors.card, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
+    cardTheme: CardThemeData(color: AppColors.card, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
