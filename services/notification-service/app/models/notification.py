@@ -17,7 +17,7 @@ class Notification(Base):
     body: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
     is_sent: Mapped[bool] = mapped_column(Boolean, default=False)
-    metadata: Mapped[dict] = mapped_column(JSONB, default=dict)
+    extra_data: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
