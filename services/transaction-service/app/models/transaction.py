@@ -27,7 +27,7 @@ class Transaction(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending")
     risk_score: Mapped[int] = mapped_column(default=0)
     fraud_flags: Mapped[dict] = mapped_column(JSONB, default=list)
-    metadata: Mapped[dict] = mapped_column(JSONB, default=dict)
+    extra_data: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)
     balance_before: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
     balance_after: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
 
