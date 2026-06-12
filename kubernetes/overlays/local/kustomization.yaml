@@ -1,0 +1,37 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../namespaces/namespace.yaml
+  - ../../configmaps/configmap.yaml
+  - ../../secrets/secrets.yaml
+  - ../../deployments/account-service.yaml
+  - ../../deployments/auth-service.yaml
+  - ../../deployments/other-services.yaml
+  - ../../ingress/ingress.yaml
+  - ../../hpa/hpa.yaml
+
+images:
+  - name: ghcr.io/issamhot69/ai-banking-platform/auth-service
+    newName: bank-auth-service
+    newTag: local
+  - name: ghcr.io/issamhot69/ai-banking-platform/account-service
+    newName: bank-account-service
+    newTag: local
+  - name: ghcr.io/issamhot69/ai-banking-platform/transaction-service
+    newName: bank-transaction-service
+    newTag: local
+  - name: ghcr.io/issamhot69/ai-banking-platform/ai-service
+    newName: bank-ai-service
+    newTag: local
+  - name: ghcr.io/issamhot69/ai-banking-platform/notification-service
+    newName: bank-notification-service
+    newTag: local
+
+patches:
+  - patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Never
+    target:
+      kind: Deployment
