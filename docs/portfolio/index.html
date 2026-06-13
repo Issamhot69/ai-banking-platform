@@ -87,6 +87,9 @@
       <div class="row"><span class="name">transaction-service</span><span class="ok">200 · 14/14 tests</span></div>
       <div class="row"><span class="name">ai-service</span><span class="ok">200 · 20/20 tests</span></div>
       <div class="row"><span class="name">notification-service</span><span class="ok">200 · 17/17 tests</span></div>
+      <div class="row"><span class="name">kyc-service</span><span class="ok">200 · KYC verified</span></div>
+      <div class="row"><span class="name">audit-service</span><span class="ok">200 · logs immutables</span></div>
+      <div class="row"><span class="name">card-service</span><span class="ok">200 · Visa/Mastercard</span></div>
       <div class="row"><span class="name">postgres / redis / kafka</span><span class="ok">healthy</span></div>
     </div>
   </div>
@@ -100,7 +103,7 @@
       <div class="metric-label">unit &amp; integration tests passing</div>
     </div>
     <div class="card">
-      <div class="metric">5</div>
+      <div class="metric">8</div>
       <div class="metric-label">independent FastAPI microservices</div>
     </div>
     <div class="card">
@@ -130,6 +133,18 @@
       <h3>Notifications</h3>
       <p>Push, email and SMS providers with templated messages — Kafka-driven, with graceful simulation mode when no provider key is configured.</p>
     </div>
+    <div class="card">
+      <h3>KYC &amp; Identité</h3>
+      <p>Upload de documents (CNI/Passeport), vérification AI automatique, workflow pending → in_review → verified, approbation admin.</p>
+    </div>
+    <div class="card">
+      <h3>Cartes virtuelles</h3>
+      <p>Génération de cartes Visa/Mastercard avec algorithme de Luhn, CVV hashé, limites journalières/mensuelles, freeze/unfreeze.</p>
+    </div>
+    <div class="card">
+      <h3>Audit Logs</h3>
+      <p>Traçabilité complète de toutes les actions — logs immuables PostgreSQL, recherche multi-critères, export CSV pour régulateurs.</p>
+    </div>
   </div>
 </section>
 
@@ -149,6 +164,10 @@
     <span>GitHub Actions CI/CD → GHCR</span>
     <span>Prometheus + Grafana</span>
     <span>Flutter mobile app</span>
+    <span>React Admin Dashboard</span>
+    <span>KYC Service</span>
+    <span>Audit Logs</span>
+    <span>Virtual Cards</span>
   </div>
 </section>
 
@@ -161,6 +180,8 @@
     <div class="item"><h4>Production startup bugs fixed live</h4><p>asyncpg driver mismatch, bcrypt 4.x break, cross-service JWT secret mismatch, SQLAlchemy FK metadata resolution — all caught and fixed against a running stack.</p></div>
     <div class="item"><h4>End-to-end money movement, verified</h4><p>Registered two users, opened accounts, ran a real transfer — balances updated correctly, fraud score computed, transaction logged.</p></div>
     <div class="item"><h4>Real AWS account wired up</h4><p>IAM admin user, S3 Terraform backend, <code>terraform plan</code> → 75 resources, zero errors.</p></div>
+    <div class="item"><h4>AWS EKS deployed &amp; destroyed</h4><p>5 pods running on real EKS nodes connected to RDS PostgreSQL — then cleanly destroyed to avoid costs.</p></div>
+    <div class="item"><h4>3 new microservices added</h4><p>KYC (identity verification), Audit logs (immutable trail), Virtual cards (Visa/Mastercard with Luhn algorithm) — all tested end-to-end.</p></div>
   </div>
 </section>
 
