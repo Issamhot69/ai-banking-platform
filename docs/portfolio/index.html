@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Banking Platform — Microservices banking core, by Issam</title>
+<style>
+  :root{
+    --bg:#0b0f10;
+    --panel:#10161a;
+    --line:#1f2b2f;
+    --mint:#4ee8c3;
+    --amber:#f2b35c;
+    --text:#e7eef0;
+    --muted:#8aa0a4;
+    --mono:'IBM Plex Mono','SF Mono',monospace;
+    --serif:'Fraunces','Georgia',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter','Helvetica Neue',Arial,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--mint);text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
+  header{padding:64px 0 48px;border-bottom:1px solid var(--line);}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--mint);text-transform:uppercase;margin-bottom:18px;}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(38px,6vw,68px);line-height:1.05;letter-spacing:-0.01em;max-width:14ch;}
+  h1 em{font-style:italic;color:var(--mint);}
+  .lead{margin-top:22px;max-width:62ch;color:var(--muted);font-size:18px;}
+  .cta-row{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap;}
+  .btn{font-family:var(--mono);font-size:13px;letter-spacing:.04em;padding:12px 20px;border-radius:3px;border:1px solid var(--line);transition:border-color .15s,color .15s;}
+  .btn.primary{background:var(--mint);color:#06201a;border-color:var(--mint);font-weight:600;}
+  .btn:not(.primary):hover{border-color:var(--mint);color:var(--mint);}
+  .status{margin-top:48px;border:1px solid var(--line);background:var(--panel);border-radius:6px;font-family:var(--mono);font-size:13px;overflow:hidden;}
+  .status .bar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);color:var(--muted)}
+  .status .bar .dot{width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px rgba(78,232,195,.12);animation:pulse 2.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .status .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));}
+  .status .row{padding:14px 16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .status .row span.name{color:var(--text)}
+  .status .row span.ok{color:var(--mint);font-size:11px;letter-spacing:.08em;}
+  section{padding:56px 0;border-bottom:1px solid var(--line);}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;}
+  h2{font-family:var(--serif);font-size:clamp(26px,3.4vw,38px);font-weight:600;margin-bottom:24px;max-width:24ch;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px;}
+  @media (max-width:760px){.grid-2,.grid-3,.status .grid{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:6px;padding:22px;background:var(--panel);}
+  .card h3{font-size:16px;margin-bottom:10px;font-weight:600;}
+  .card p{color:var(--muted);font-size:14px;}
+  .stack-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .stack-list span{font-family:var(--mono);font-size:12px;border:1px solid var(--line);padding:5px 10px;border-radius:3px;color:var(--muted);}
+  .metric{font-family:var(--serif);font-size:42px;color:var(--mint);}
+  .metric-label{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:4px;}
+  .timeline{border-left:1px solid var(--line);margin-left:6px;}
+  .timeline .item{position:relative;padding:0 0 22px 26px;}
+  .timeline .item::before{content:'';position:absolute;left:-5px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:2px solid var(--mint);}
+  .timeline .item h4{font-size:15px;margin-bottom:4px;}
+  .timeline .item p{color:var(--muted);font-size:13px;}
+  footer{padding:48px 0;color:var(--muted);font-family:var(--mono);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="eyebrow">Banking platform — built &amp; battle-tested in 5 days</div>
+  <h1>A core banking system that <em>actually runs</em>, end to end.</h1>
+  <p class="lead">
+    Microservices banking platform — accounts, transfers, fraud scoring, an AI assistant and notifications —
+    deployed locally with Docker, validated on a real Kubernetes cluster, and provisioned for AWS via Terraform.
+    78 automated tests pass. The flow below isn't a mockup: it's a live transfer between two real accounts.
+  </p>
+  <div class="cta-row">
+    <a class="btn primary" href="https://github.com/Issamhot69/ai-banking-platform" target="_blank">View source on GitHub →</a>
+    <a class="btn" href="#contact">Hire me for this stack</a>
+  </div>
+
+  <div class="status">
+    <div class="bar"><span class="dot"></span> SYSTEM STATUS — all services healthy</div>
+    <div class="grid">
+      <div class="row"><span class="name">auth-service</span><span class="ok">200 · 14/14 tests</span></div>
+      <div class="row"><span class="name">account-service</span><span class="ok">200 · 13/13 tests</span></div>
+      <div class="row"><span class="name">transaction-service</span><span class="ok">200 · 14/14 tests</span></div>
+      <div class="row"><span class="name">ai-service</span><span class="ok">200 · 20/20 tests</span></div>
+      <div class="row"><span class="name">notification-service</span><span class="ok">200 · 17/17 tests</span></div>
+      <div class="row"><span class="name">postgres / redis / kafka</span><span class="ok">healthy</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="wrap">
+  <div class="kicker">Proof, not promises</div>
+  <div class="grid-3">
+    <div class="card">
+      <div class="metric">78/78</div>
+      <div class="metric-label">unit &amp; integration tests passing</div>
+    </div>
+    <div class="card">
+      <div class="metric">5</div>
+      <div class="metric-label">independent FastAPI microservices</div>
+    </div>
+    <div class="card">
+      <div class="metric">75</div>
+      <div class="metric-label">AWS resources planned via Terraform (VPC/EKS/RDS/Redis)</div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="kicker">What it does</div>
+  <h2>Everything a digital bank's backend needs to move money safely.</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Accounts &amp; transfers</h3>
+      <p>JWT auth with 2FA, KYC status, IBAN-generating account service, and a transaction engine with daily/monthly limits, balance checks and reversible transfers.</p>
+    </div>
+    <div class="card">
+      <h3>Real-time fraud detection</h3>
+      <p>Every transfer is scored on amount thresholds, daily velocity (Redis-backed) and transaction history — flagging suspicious activity before it completes.</p>
+    </div>
+    <div class="card">
+      <h3>AI assistant &amp; insights</h3>
+      <p>Claude-powered banking chatbot plus a credit-scoring and spending-recommendation engine, exposed as its own service.</p>
+    </div>
+    <div class="card">
+      <h3>Notifications</h3>
+      <p>Push, email and SMS providers with templated messages — Kafka-driven, with graceful simulation mode when no provider key is configured.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="kicker">How it's built</div>
+  <h2>Production patterns, not toy code.</h2>
+  <div class="stack-list">
+    <span>FastAPI / async SQLAlchemy</span>
+    <span>PostgreSQL</span>
+    <span>Redis</span>
+    <span>Kafka</span>
+    <span>MongoDB</span>
+    <span>Docker Compose</span>
+    <span>Kubernetes + Kustomize</span>
+    <span>Terraform (AWS EKS/RDS/ElastiCache)</span>
+    <span>HashiCorp Vault</span>
+    <span>GitHub Actions CI/CD → GHCR</span>
+    <span>Prometheus + Grafana</span>
+    <span>Flutter mobile app</span>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="kicker">Build log</div>
+  <h2>Real debugging, real fixes — left in the history on purpose.</h2>
+  <div class="timeline">
+    <div class="item"><h4>Test suites for all 5 services</h4><p>conftest fixtures, mocked Kafka/Redis, JWT-based auth in tests — 78/78 green.</p></div>
+    <div class="item"><h4>Local Kubernetes validation</h4><p>Built &amp; loaded images into a kind cluster, deployed via Kustomize overlay, confirmed pods schedule correctly.</p></div>
+    <div class="item"><h4>Production startup bugs fixed live</h4><p>asyncpg driver mismatch, bcrypt 4.x break, cross-service JWT secret mismatch, SQLAlchemy FK metadata resolution — all caught and fixed against a running stack.</p></div>
+    <div class="item"><h4>End-to-end money movement, verified</h4><p>Registered two users, opened accounts, ran a real transfer — balances updated correctly, fraud score computed, transaction logged.</p></div>
+    <div class="item"><h4>Real AWS account wired up</h4><p>IAM admin user, S3 Terraform backend, <code>terraform plan</code> → 75 resources, zero errors.</p></div>
+  </div>
+</section>
+
+<footer class="wrap" id="contact">
+  <div>ai-banking-platform · FastAPI + Flutter + TensorFlow + Claude AI</div>
+  <div><a href="https://github.com/Issamhot69/ai-banking-platform" target="_blank">github.com/Issamhot69/ai-banking-platform</a></div>
+</footer>
+
+</body>
+</html>
