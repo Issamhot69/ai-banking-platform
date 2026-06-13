@@ -13,8 +13,11 @@ from app.consumers.kafka_consumer import notification_consumer
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        print(f"⚠️  Skipping create_all (tables managed externally): {e}")
     await init_redis()
     asyncio.create_task(notification_consumer.start())
     print(f"✅ {settings.APP_NAME} démarré")
