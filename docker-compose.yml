@@ -165,6 +165,7 @@ services:
     container_name: bank_ai
     environment:
       SECRET_KEY: ${SECRET_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@postgres:5432/bankdb
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
