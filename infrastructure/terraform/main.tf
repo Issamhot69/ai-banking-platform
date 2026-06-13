@@ -39,7 +39,7 @@ module "eks" {
   version = "~> 19.0"
 
   cluster_name    = "${var.project_name}-cluster"
-  cluster_version = "1.28"
+  cluster_version = "1.31"
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -51,14 +51,14 @@ module "eks" {
       min_size       = 2
       max_size       = 10
       desired_size   = 3
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.micro"]
       capacity_type  = "ON_DEMAND"
     }
     ai_nodes = {
       min_size       = 1
       max_size       = 4
       desired_size   = 2
-      instance_types = ["t3.xlarge"]
+      instance_types = ["t3.micro"]
       capacity_type  = "SPOT"
       taints = [{
         key    = "ai-workload"
@@ -74,9 +74,9 @@ module "eks" {
 resource "aws_db_instance" "postgres" {
   identifier        = "${var.project_name}-postgres"
   engine            = "postgres"
-  engine_version    = "15.4"
-  instance_class    = "db.t3.medium"
-  allocated_storage = 100
+  engine_version    = "15"
+  instance_class    = "db.t3.micro"
+  allocated_storage = 20
   storage_encrypted = true
   db_name           = "bankdb"
   username          = "bankadmin"
@@ -84,9 +84,9 @@ resource "aws_db_instance" "postgres" {
   multi_az          = true
   db_subnet_group_name   = aws_db_subnet_group.postgres.name
   vpc_security_group_ids = [aws_security_group.rds.id]
-  backup_retention_period = 7
+  backup_retention_period = 0
   deletion_protection     = true
-  skip_final_snapshot     = false
+  skip_final_snapshot     = true
   tags = { Project = var.project_name }
 }
 
