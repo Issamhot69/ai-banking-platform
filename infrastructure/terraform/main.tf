@@ -7,7 +7,7 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "bank-terraform-state"
+    bucket = "bank-terraform-state-646064803740"
     key    = "production/terraform.tfstate"
     region = "eu-west-1"
   }
