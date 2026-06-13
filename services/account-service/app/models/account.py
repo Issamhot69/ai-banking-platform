@@ -5,6 +5,14 @@ from sqlalchemy import String, Boolean, DateTime, Numeric, ForeignKey, Index
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
+from sqlalchemy import Table, Column
+
+# Référence légère à la table "users" (gérée par auth-service) pour résoudre la FK
+users_table = Table(
+    "users", Base.metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    extend_existing=True,
+)
 
 
 class Account(Base):

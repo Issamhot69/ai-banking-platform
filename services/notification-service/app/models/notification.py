@@ -4,6 +4,13 @@ from sqlalchemy import String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from app.core.database import Base
+from sqlalchemy import Table, Column
+
+users_table = Table(
+    "users", Base.metadata,
+    Column("id", UUID(as_uuid=True), primary_key=True),
+    extend_existing=True,
+)
 
 
 class Notification(Base):

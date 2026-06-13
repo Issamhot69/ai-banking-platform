@@ -119,6 +119,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@postgres:5432/bankdb
       REDIS_URL: redis://:redispass123@redis:6379/1
+      SECRET_KEY: ${SECRET_KEY}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8002:8000"
@@ -134,6 +135,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@postgres:5432/bankdb
       REDIS_URL: redis://:redispass123@redis:6379/2
+      SECRET_KEY: ${SECRET_KEY}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8003:8000"
@@ -147,6 +149,7 @@ services:
       dockerfile: Dockerfile
     container_name: bank_notification
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       MONGODB_URL: mongodb://bankadmin:mongopass123@mongodb:27017/bank_docs
     ports:
@@ -161,6 +164,7 @@ services:
       dockerfile: Dockerfile
     container_name: bank_ai
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@postgres:5432/bankdb
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
