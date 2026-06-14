@@ -285,3 +285,20 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
+
+  security-service:
+    build: ./services/security-service
+    container_name: bank_security
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@postgres:5432/bankdb
+      REDIS_URL: redis://:redispass123@redis:6379/5
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8013:8000"
+    networks:
+      - bank-network
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
