@@ -317,3 +317,18 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
+
+  crypto-service:
+    build: ./services/crypto-service
+    container_name: bank_crypto
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@postgres:5432/bankdb
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8015:8000"
+    networks:
+      - bank-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
