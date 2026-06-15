@@ -56,5 +56,6 @@ def convert_eur_to_crypto(amount_eur: Decimal, currency: str) -> Decimal:
 
 def calculate_fee(amount: Decimal, currency: str) -> tuple:
     fee_crypto = (amount * Decimal("0.005")).quantize(Decimal("0.00000001"))
-    fee_eur = convert_to_eur(fee_crypto, currency)
+    price = get_price_eur(currency)
+    fee_eur = (fee_crypto * price).quantize(Decimal("0.01"))
     return fee_crypto, fee_eur

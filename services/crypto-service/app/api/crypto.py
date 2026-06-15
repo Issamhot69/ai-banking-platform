@@ -131,7 +131,8 @@ async def create_transaction(
         raise HTTPException(status_code=404, detail="Wallet introuvable")
 
     price_eur = get_price_eur(wallet.currency)
-    fee_crypto, fee_eur = calculate_fee(payload.amount, wallet.currency)
+    fee_crypto = (payload.amount * Decimal("0.005")).quantize(Decimal("0.00000001"))
+    fee_eur = (fee_crypto * price_eur).quantize(Decimal("0.01"))
     amount_eur = convert_to_eur(payload.amount, wallet.currency)
 
     if payload.tx_type == "buy":
