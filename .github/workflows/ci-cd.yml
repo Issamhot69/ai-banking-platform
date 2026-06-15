@@ -10,8 +10,95 @@ env:
   IMAGE_PREFIX: ghcr.io/${{ github.repository }}
 
 jobs:
-  test:
-    name: 🧪 Test Auth Service
+  test-original:
+    name: 🧪 Test Original Services
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: bankadmin
+          POSTGRES_PASSWORD: bankpass123
+          POSTGRES_DB: bankdb_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    strategy:
+      matrix:
+        service: [auth-service, account-service, transaction-service, notification-service, ai-service]
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: pip install -r requirements.txt -r tests/requirements-test.txt
+
+      - name: 🧪 Run tests
+        working-directory: services/${{ matrix.service }}
+        env:
+          DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@localhost:5432/bankdb_test
+          SECRET_KEY: test_secret_key_for_ci_min32characters
+          ENVIRONMENT: test
+          DEBUG: "false"
+          PYTHONPATH: .
+        run: python -m pytest tests/ -v
+
+  test-new:
+    name: 🧪 Test New Services
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: bankadmin
+          POSTGRES_PASSWORD: bankpass123
+          POSTGRES_DB: bankdb_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    strategy:
+      matrix:
+        service: [kyc-service, audit-service, card-service, swift-service, sepa-service, loan-service, crypto-service]
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install dependencies
+        working-directory: services/${{ matrix.service }}
+        run: pip install -r requirements.txt -r tests/requirements-test.txt
+
+      - name: 🧪 Run tests
+        working-directory: services/${{ matrix.service }}
+        env:
+          DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@localhost:5432/bankdb_test
+          SECRET_KEY: test_secret_key_for_ci_min32characters
+          ENVIRONMENT: test
+          DEBUG: "false"
+          ANTHROPIC_API_KEY: test_key
+          PYTHONPATH: .
+        run: python -m pytest tests/ -v
+
+  test-security:
+    name: 🧪 Test Security Service
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -35,36 +122,46 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: services/auth-service/requirements.txt
 
       - name: 📦 Install dependencies
-        working-directory: services/auth-service
-        run: |
-          pip install -r requirements.txt -r tests/requirements-test.txt
+        working-directory: services/security-service
+        run: pip install -r requirements.txt -r tests/requirements-test.txt
 
       - name: 🧪 Run tests
-        working-directory: services/auth-service
+        working-directory: services/security-service
         env:
           DATABASE_URL: postgresql+asyncpg://bankadmin:bankpass123@localhost:5432/bankdb_test
           SECRET_KEY: test_secret_key_for_ci_min32characters
           ENVIRONMENT: test
           DEBUG: "false"
+          REDIS_URL: redis://localhost:6379/5
           PYTHONPATH: .
-        run: |
-          python -m pytest tests/ -v
+        run: python -m pytest tests/ -v
 
   build:
     name: 🐳 Build Docker Images
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test-original, test-new, test-security]
     if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
     strategy:
       matrix:
-        service: [auth-service, account-service, transaction-service, ai-service, notification-service]
+        service:
+          - auth-service
+          - account-service
+          - transaction-service
+          - ai-service
+          - notification-service
+          - kyc-service
+          - audit-service
+          - card-service
+          - swift-service
+          - sepa-service
+          - security-service
+          - loan-service
+          - crypto-service
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
@@ -121,18 +218,8 @@ jobs:
         run: |
           kubectl apply -f kubernetes/namespaces/
           kubectl apply -f kubernetes/configmaps/
-          kubectl apply -f kubernetes/secrets/
           kubectl apply -f kubernetes/deployments/
           kubectl apply -f kubernetes/ingress/
-          kubectl apply -f kubernetes/hpa/
-
-      - name: ⏳ Wait for rollout
-        run: |
-          kubectl rollout status deployment/auth-service -n bank --timeout=300s
-          kubectl rollout status deployment/account-service -n bank --timeout=300s
-          kubectl rollout status deployment/transaction-service -n bank --timeout=300s
-          kubectl rollout status deployment/ai-service -n bank --timeout=300s
-          kubectl rollout status deployment/notification-service -n bank --timeout=300s
 
       - name: ✅ Verify deployment
         run: kubectl get pods -n bank
