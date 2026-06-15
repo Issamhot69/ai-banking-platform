@@ -87,7 +87,14 @@
       <div class="row"><span class="name">transaction-service</span><span class="ok">200 · 14/14 tests</span></div>
       <div class="row"><span class="name">ai-service</span><span class="ok">200 · 20/20 tests</span></div>
       <div class="row"><span class="name">notification-service</span><span class="ok">200 · 17/17 tests</span></div>
-      <div class="row"><span class="name">kyc-service</span><span class="ok">200 · KYC verified</span></div>
+      <div class="row"><span class="name">kyc-service</span><span class="ok">200 · 8/8 tests</span></div>
+      <div class="row"><span class="name">audit-service</span><span class="ok">200 · 9/9 tests</span></div>
+      <div class="row"><span class="name">card-service</span><span class="ok">200 · 10/10 tests</span></div>
+      <div class="row"><span class="name">swift-service</span><span class="ok">200 · 9/9 tests</span></div>
+      <div class="row"><span class="name">sepa-service</span><span class="ok">200 · 8/8 tests</span></div>
+      <div class="row"><span class="name">security-service</span><span class="ok">200 · 10/10 tests</span></div>
+      <div class="row"><span class="name">loan-service</span><span class="ok">200 · 12/12 tests</span></div>
+      <div class="row"><span class="name">crypto-service</span><span class="ok">200 · 12/12 tests</span></div>
       <div class="row"><span class="name">audit-service</span><span class="ok">200 · logs immutables</span></div>
       <div class="row"><span class="name">card-service</span><span class="ok">200 · Visa/Mastercard</span></div>
       <div class="row"><span class="name">postgres / redis / kafka</span><span class="ok">healthy</span></div>
@@ -99,7 +106,7 @@
   <div class="kicker">Proof, not promises</div>
   <div class="grid-3">
     <div class="card">
-      <div class="metric">78/78</div>
+      <div class="metric">156/156</div>
       <div class="metric-label">unit &amp; integration tests passing</div>
     </div>
     <div class="card">
@@ -181,7 +188,9 @@
     <div class="item"><h4>End-to-end money movement, verified</h4><p>Registered two users, opened accounts, ran a real transfer — balances updated correctly, fraud score computed, transaction logged.</p></div>
     <div class="item"><h4>Real AWS account wired up</h4><p>IAM admin user, S3 Terraform backend, <code>terraform plan</code> → 75 resources, zero errors.</p></div>
     <div class="item"><h4>AWS EKS deployed &amp; destroyed</h4><p>5 pods running on real EKS nodes connected to RDS PostgreSQL — then cleanly destroyed to avoid costs.</p></div>
-    <div class="item"><h4>3 new microservices added</h4><p>KYC (identity verification), Audit logs (immutable trail), Virtual cards (Visa/Mastercard with Luhn algorithm) — all tested end-to-end.</p></div>
+    <div class="item"><h4>8 new microservices added</h4><p>KYC, Audit, Cards, SWIFT (MT103), SEPA (SCT Inst), Security (Rate Limiting), Loans (credit scoring), Crypto Wallet (BTC/ETH/SOL) — all tested end-to-end.</p></div>
+    <div class="item"><h4>156/156 tests passing</h4><p>Full test coverage across all 13 microservices — conftest fixtures, mocked Redis/Kafka, JWT auth, real PostgreSQL integration tests.</p></div>
+    <div class="item"><h4>AWS EKS Production — 4 pods Running</h4><p>auth, account, transaction, notification services running on real EKS nodes connected to RDS PostgreSQL with SSL — cleanly destroyed after validation.</p></div>
   </div>
 </section>
 
