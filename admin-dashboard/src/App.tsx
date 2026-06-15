@@ -4,6 +4,10 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Users from './pages/Users';
+import KYC from './pages/KYC';
+import Cards from './pages/Cards';
+import Crypto from './pages/Crypto';
+import Loans from './pages/Loans';
 import './index.css';
 
 const App: React.FC = () => {
@@ -29,6 +33,10 @@ const App: React.FC = () => {
       case 'dashboard': return <Dashboard />;
       case 'transactions': return <Transactions />;
       case 'users': return <Users />;
+      case 'kyc': return <KYC />;
+      case 'cards': return <Cards />;
+      case 'crypto': return <Crypto />;
+      case 'loans': return <Loans />;
       case 'accounts': return (
         <div className="p-6">
           <h2 className="text-2xl font-bold text-white mb-4">Comptes Bancaires</h2>
@@ -45,11 +53,19 @@ const App: React.FC = () => {
           </div>
         </div>
       );
-      case 'kyc': return (
+      case 'swift': return (
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">Gestion KYC</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">Virements SWIFT</h2>
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500">
-            🪪 Section KYC — en cours de développement
+            🌍 Section SWIFT MT103 — en cours de développement
+          </div>
+        </div>
+      );
+      case 'sepa': return (
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-white mb-4">Virements SEPA</h2>
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500">
+            🇪🇺 Section SEPA SCT/SCT Inst — en cours de développement
           </div>
         </div>
       );

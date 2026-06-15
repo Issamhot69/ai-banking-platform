@@ -12,6 +12,11 @@ const menuItems = [
   { id: 'transactions', label: 'Transactions', icon: '💸' },
   { id: 'fraud', label: 'Fraude', icon: '🚨' },
   { id: 'kyc', label: 'KYC', icon: '🪪' },
+  { id: 'cards', label: 'Cartes', icon: '💳' },
+  { id: 'loans', label: 'Prêts', icon: '💰' },
+  { id: 'swift', label: 'SWIFT', icon: '🌍' },
+  { id: 'sepa', label: 'SEPA', icon: '🇪🇺' },
+  { id: 'crypto', label: 'Crypto', icon: '₿' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
@@ -21,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
         <h1 className="text-xl font-bold text-blue-400">🏦 AI Banking</h1>
         <p className="text-xs text-gray-500 mt-1">Admin Dashboard</p>
       </div>
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         {menuItems.map((item) => (
           <button
             key={item.id}
