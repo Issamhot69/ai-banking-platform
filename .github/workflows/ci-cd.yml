@@ -72,7 +72,7 @@ jobs:
           - 5432:5432
     strategy:
       matrix:
-        service: [kyc-service, audit-service, card-service, swift-service, sepa-service, loan-service, crypto-service]
+        service: [kyc-service, audit-service, card-service, swift-service, sepa-service, loan-service, crypto-service, crm-service]
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
