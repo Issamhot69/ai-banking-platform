@@ -10,6 +10,7 @@ os.environ["DEBUG"] = "false"
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.pool import NullPool
+from sqlalchemy import text
 from jose import jwt
 
 from app.core.database import Base, get_db
