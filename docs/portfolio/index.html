@@ -110,7 +110,7 @@
       <div class="metric-label">unit &amp; integration tests passing</div>
     </div>
     <div class="card">
-      <div class="metric">13</div>
+      <div class="metric">14</div>
       <div class="metric-label">independent FastAPI microservices</div>
     </div>
     <div class="card">
@@ -188,8 +188,9 @@
     <div class="item"><h4>End-to-end money movement, verified</h4><p>Registered two users, opened accounts, ran a real transfer — balances updated correctly, fraud score computed, transaction logged.</p></div>
     <div class="item"><h4>Real AWS account wired up</h4><p>IAM admin user, S3 Terraform backend, <code>terraform plan</code> → 75 resources, zero errors.</p></div>
     <div class="item"><h4>AWS EKS deployed &amp; destroyed</h4><p>5 pods running on real EKS nodes connected to RDS PostgreSQL — then cleanly destroyed to avoid costs.</p></div>
-    <div class="item"><h4>8 new microservices added</h4><p>KYC, Audit, Cards, SWIFT (MT103), SEPA (SCT Inst), Security (Rate Limiting), Loans (credit scoring), Crypto Wallet (BTC/ETH/SOL) — all tested end-to-end.</p></div>
-    <div class="item"><h4>156/156 tests passing</h4><p>Full test coverage across all 13 microservices — conftest fixtures, mocked Redis/Kafka, JWT auth, real PostgreSQL integration tests.</p></div>
+    <div class="item"><h4>9 new microservices added</h4><p>KYC, Audit, Cards, SWIFT (MT103), SEPA (SCT Inst), Security (Rate Limiting), Loans (credit scoring), Crypto Wallet (BTC/ETH/SOL), CRM (customer profiles &amp; support tickets) — all tested end-to-end.</p></div>
+    <div class="item"><h4>156/156 tests passing</h4><p>Full test coverage across all 14 microservices — conftest fixtures, mocked Redis/Kafka, JWT auth, real PostgreSQL integration tests.</p></div>
+    <div class="item"><h4>CI/CD pipeline fully green</h4><p>Debugged a subtle table-creation race condition affecting 7 services in CI (SQLAlchemy metadata.create_all running before raw-SQL table setup) — all 14 services now test, build and push to GHCR automatically on every push.</p></div>
     <div class="item"><h4>AWS EKS Production — 4 pods Running</h4><p>auth, account, transaction, notification services running on real EKS nodes connected to RDS PostgreSQL with SSL — cleanly destroyed after validation.</p></div>
   </div>
 </section>
