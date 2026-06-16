@@ -69,13 +69,14 @@ class TestKYCStatus:
         assert "document_type" in data
 
     async def test_get_status_no_application(self, client):
-        import uuid
+        import os
         from datetime import datetime, timedelta, timezone
         from jose import jwt
+        import uuid
         new_user_token = jwt.encode(
-            {"sub": str(uuid.uuid4()), "email": "new@bank.com", "type": "access",
+            {"sub": str(uuid.uuid4()), "email": "new_no_app@bank.com", "type": "access",
              "exp": datetime.now(timezone.utc) + timedelta(minutes=30)},
-            "test_secret_key_for_testing_only_32chars", algorithm="HS256"
+            os.environ["SECRET_KEY"], algorithm=os.environ.get("ALGORITHM", "HS256")
         )
         response = await client.get("/api/v1/kyc/status",
                                     headers={"Authorization": f"Bearer {new_user_token}"})
