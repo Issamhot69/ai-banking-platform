@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import Table, Column
 from app.core.database import Base
+from app.utils.encryption import encrypt_field, decrypt_field
 
 users_table = Table(
     "users", Base.metadata,
@@ -26,8 +27,16 @@ class VirtualCard(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     account_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("accounts.id"), nullable=False)
-    card_number: Mapped[str] = mapped_column(String(19), unique=True, nullable=False)
+    card_number_encrypted: Mapped[str] = mapped_column("card_number", String(255), unique=True, nullable=False)
     card_number_masked: Mapped[str] = mapped_column(String(19), nullable=False)
+
+    @property
+    def card_number(self) -> str:
+        return decrypt_field(self.card_number_encrypted)
+
+    @card_number.setter
+    def card_number(self, value: str) -> None:
+        self.card_number_encrypted = encrypt_field(value)
     card_holder_name: Mapped[str] = mapped_column(String(100), nullable=False)
     expiry_month: Mapped[int] = mapped_column(Integer, nullable=False)
     expiry_year: Mapped[int] = mapped_column(Integer, nullable=False)
