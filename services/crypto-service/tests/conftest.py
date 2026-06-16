@@ -35,7 +35,7 @@ def create_test_token():
 @pytest.fixture(autouse=True, scope="session")
 async def create_tables():
     async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text("DROP TABLE IF EXISTS users CASCADE"))
         await conn.execute(text(
             "CREATE TABLE IF NOT EXISTS users ("
             "id UUID PRIMARY KEY, "
@@ -54,6 +54,7 @@ async def create_tables():
             "created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), "
             "updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW())"
         ))
+        await conn.run_sync(Base.metadata.create_all)
         await conn.execute(text("DELETE FROM crypto_transactions WHERE user_id = :id"), {"id": TEST_USER_ID})
         await conn.execute(text("DELETE FROM crypto_wallets WHERE user_id = :id"), {"id": TEST_USER_ID})
         await conn.execute(

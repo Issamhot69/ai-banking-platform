@@ -35,7 +35,7 @@ def create_test_token():
 @pytest.fixture(autouse=True, scope="session")
 async def create_tables():
     async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text("DROP TABLE IF EXISTS users CASCADE"))
         await conn.execute(text("""
             CREATE TABLE IF NOT EXISTS users (
                 id UUID PRIMARY KEY,
@@ -73,6 +73,7 @@ async def create_tables():
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
             )
         """))
+        await conn.run_sync(Base.metadata.create_all)
         await conn.execute(text("""
             INSERT INTO users (id, email, password_hash, first_name, last_name,
                 is_active, is_verified, kyc_status, is_2fa_enabled, created_at, updated_at)
