@@ -1,0 +1,98 @@
+<svg width="100%" viewBox="0 0 680 760" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>AI Banking Platform architecture diagram</title>
+<desc>Client apps connect through an API gateway to 14 FastAPI microservices grouped into four domains: core banking, payments, risk and compliance, and engagement. All services share PostgreSQL, Redis, Kafka and MongoDB.</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<style>
+text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.th { font-size: 14px; font-weight: 500; }
+.ts { font-size: 12px; }
+</style>
+
+<rect x="240" y="20" width="200" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text class="th" x="340" y="42" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">Client apps</text>
+<text class="ts" x="340" y="78" text-anchor="middle" fill="#5F5E5A">Web dashboard, mobile, partner APIs</text>
+
+<line x1="340" y1="64" x2="340" y2="118" stroke="#73726c" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="220" y="118" width="240" height="44" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="th" x="340" y="140" text-anchor="middle" dominant-baseline="central" fill="#26215C">API gateway</text>
+<text class="ts" x="340" y="178" text-anchor="middle" fill="#5F5E5A">Routing, JWT validation, rate limiting</text>
+
+<line x1="340" y1="162" x2="340" y2="208" stroke="#73726c" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="40" y="208" width="600" height="120" rx="20" fill="none" stroke="#534AB7" stroke-width="0.5"/>
+<text class="th" x="60" y="232" fill="#26215C">Core banking</text>
+
+<rect x="60" y="248" width="120" height="56" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="th" x="120" y="266" text-anchor="middle" dominant-baseline="central" fill="#26215C">Auth</text>
+<text class="ts" x="120" y="284" text-anchor="middle" dominant-baseline="central" fill="#3C3489">JWT, 2FA</text>
+
+<rect x="195" y="248" width="120" height="56" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="th" x="255" y="266" text-anchor="middle" dominant-baseline="central" fill="#26215C">Account</text>
+<text class="ts" x="255" y="284" text-anchor="middle" dominant-baseline="central" fill="#3C3489">IBAN, balances</text>
+
+<rect x="330" y="248" width="120" height="56" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="th" x="390" y="266" text-anchor="middle" dominant-baseline="central" fill="#26215C">Transaction</text>
+<text class="ts" x="390" y="284" text-anchor="middle" dominant-baseline="central" fill="#3C3489">Transfers, limits</text>
+
+<rect x="465" y="248" width="120" height="56" rx="12" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+<text class="th" x="525" y="266" text-anchor="middle" dominant-baseline="central" fill="#26215C">AI assistant</text>
+<text class="ts" x="525" y="284" text-anchor="middle" dominant-baseline="central" fill="#3C3489">Fraud, credit score</text>
+
+<rect x="40" y="344" width="600" height="120" rx="20" fill="none" stroke="#D85A30" stroke-width="0.5"/>
+<text class="th" x="60" y="368" fill="#4A1B0C">Payments</text>
+
+<rect x="60" y="384" width="120" height="56" rx="12" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+<text class="th" x="120" y="402" text-anchor="middle" dominant-baseline="central" fill="#4A1B0C">Card</text>
+<text class="ts" x="120" y="420" text-anchor="middle" dominant-baseline="central" fill="#712B13">Virtual Visa/MC</text>
+
+<rect x="195" y="384" width="120" height="56" rx="12" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+<text class="th" x="255" y="402" text-anchor="middle" dominant-baseline="central" fill="#4A1B0C">SWIFT</text>
+<text class="ts" x="255" y="420" text-anchor="middle" dominant-baseline="central" fill="#712B13">MT103 transfers</text>
+
+<rect x="330" y="384" width="120" height="56" rx="12" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+<text class="th" x="390" y="402" text-anchor="middle" dominant-baseline="central" fill="#4A1B0C">SEPA</text>
+<text class="ts" x="390" y="420" text-anchor="middle" dominant-baseline="central" fill="#712B13">SCT, SCT Inst</text>
+
+<rect x="465" y="384" width="120" height="56" rx="12" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+<text class="th" x="525" y="402" text-anchor="middle" dominant-baseline="central" fill="#4A1B0C">Loan</text>
+<text class="ts" x="525" y="420" text-anchor="middle" dominant-baseline="central" fill="#712B13">Credit scoring</text>
+
+<rect x="40" y="480" width="600" height="120" rx="20" fill="none" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="th" x="60" y="504" fill="#04342C">Risk &amp; compliance</text>
+
+<rect x="60" y="520" width="120" height="56" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="th" x="120" y="538" text-anchor="middle" dominant-baseline="central" fill="#04342C">KYC</text>
+<text class="ts" x="120" y="556" text-anchor="middle" dominant-baseline="central" fill="#085041">Identity checks</text>
+
+<rect x="195" y="520" width="120" height="56" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="th" x="255" y="538" text-anchor="middle" dominant-baseline="central" fill="#04342C">Audit</text>
+<text class="ts" x="255" y="556" text-anchor="middle" dominant-baseline="central" fill="#085041">Immutable logs</text>
+
+<rect x="330" y="520" width="120" height="56" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="th" x="390" y="538" text-anchor="middle" dominant-baseline="central" fill="#04342C">Security</text>
+<text class="ts" x="390" y="556" text-anchor="middle" dominant-baseline="central" fill="#085041">Rate limiting</text>
+
+<rect x="465" y="520" width="120" height="56" rx="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text class="th" x="525" y="538" text-anchor="middle" dominant-baseline="central" fill="#04342C">Crypto</text>
+<text class="ts" x="525" y="556" text-anchor="middle" dominant-baseline="central" fill="#085041">BTC, ETH, SOL</text>
+
+<rect x="40" y="616" width="285" height="56" rx="20" fill="none" stroke="#993556" stroke-width="0.5"/>
+<text class="th" x="56" y="638" fill="#4B1528">Engagement</text>
+<rect x="135" y="624" width="100" height="40" rx="10" fill="#FBEAF0" stroke="#993556" stroke-width="0.5"/>
+<text class="th" x="185" y="638" text-anchor="middle" dominant-baseline="central" fill="#4B1528">CRM</text>
+<text class="ts" x="185" y="654" text-anchor="middle" dominant-baseline="central" fill="#72243E">Profiles</text>
+
+<rect x="395" y="624" width="225" height="40" rx="10" fill="#FBEAF0" stroke="#993556" stroke-width="0.5"/>
+<text class="th" x="507" y="638" text-anchor="middle" dominant-baseline="central" fill="#4B1528">Notification</text>
+<text class="ts" x="507" y="654" text-anchor="middle" dominant-baseline="central" fill="#72243E">Push, email, SMS</text>
+
+<line x1="340" y1="328" x2="340" y2="340" stroke="#73726c" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="340" y1="464" x2="340" y2="476" stroke="#73726c" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="60" y="696" width="560" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text class="th" x="340" y="718" text-anchor="middle" dominant-baseline="central" fill="#2C2C2A">PostgreSQL · Redis · Kafka · MongoDB</text>
+<line x1="340" y1="600" x2="340" y2="692" stroke="#73726c" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>
