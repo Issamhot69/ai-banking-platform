@@ -1,3 +1,6 @@
+rule_files:
+  - /etc/prometheus/rules/alerts.yml
+
 global:
   scrape_interval: 15s
 
@@ -14,6 +17,37 @@ scrape_configs:
   - job_name: 'ai-service'
     static_configs:
       - targets: ['ai-service:8000']
+
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:8000']
+  - job_name: 'kyc-service'
+    static_configs:
+      - targets: ['kyc-service:8000']
+  - job_name: 'audit-service'
+    static_configs:
+      - targets: ['audit-service:8000']
+  - job_name: 'card-service'
+    static_configs:
+      - targets: ['card-service:8000']
+  - job_name: 'swift-service'
+    static_configs:
+      - targets: ['swift-service:8000']
+  - job_name: 'sepa-service'
+    static_configs:
+      - targets: ['sepa-service:8000']
+  - job_name: 'security-service'
+    static_configs:
+      - targets: ['security-service:8000']
+  - job_name: 'loan-service'
+    static_configs:
+      - targets: ['loan-service:8000']
+  - job_name: 'crypto-service'
+    static_configs:
+      - targets: ['crypto-service:8000']
+  - job_name: 'crm-service'
+    static_configs:
+      - targets: ['crm-service:8000']
 
   - job_name: 'node-exporter'
     static_configs:
