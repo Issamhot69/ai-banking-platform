@@ -197,8 +197,6 @@
     <div class="item"><h4>CI/CD pipeline fully green</h4><p>Debugged a subtle table-creation race condition affecting 7 services in CI (SQLAlchemy metadata.create_all running before raw-SQL table setup) — all 14 services now test, build and push to GHCR automatically on every push.</p></div>
     <div class="item"><h4>Load tested with k6</h4><p>30 concurrent virtual users against transaction-service's read path — zero failures, p95 latency 85ms (500ms threshold), 1938 requests served at 27.5 req/s.</p></div>
     <div class="item"><h4>Field-level encryption added</h4><p>Card numbers now encrypted at rest with Fernet, transparent to application code via a Python property — caught and reverted a regression where per-service JWT secrets broke cross-service auth.</p></div>
-    <div class="item"><h4>Load tested with k6</h4><p>30 concurrent virtual users against transaction-service's read path — zero failures, p95 latency 85ms (500ms threshold), 1938 requests served at 27.5 req/s.</p></div>
-    <div class="item"><h4>Field-level encryption added</h4><p>Card numbers now encrypted at rest with Fernet, transparent to application code via a Python property — caught and reverted a regression where per-service JWT secrets broke cross-service auth.</p></div>
     <div class="item"><h4>AWS EKS Production — 4 pods Running</h4><p>auth, account, transaction, notification services running on real EKS nodes connected to RDS PostgreSQL with SSL — cleanly destroyed after validation.</p></div>
   </div>
 </section>
