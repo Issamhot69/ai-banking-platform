@@ -26,6 +26,7 @@ redis_module.redis_client = _mock_redis
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.pool import NullPool
+from sqlalchemy import text
 from app.core.database import Base, get_db
 from app.core.redis import get_redis
 from app.main import app
