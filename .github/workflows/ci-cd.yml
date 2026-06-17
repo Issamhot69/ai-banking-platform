@@ -138,6 +138,43 @@ jobs:
           PYTHONPATH: .
         run: python -m pytest tests/ -v
 
+  security-scan:
+    name: 🔍 Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        service:
+          - auth-service
+          - account-service
+          - transaction-service
+          - notification-service
+          - ai-service
+          - kyc-service
+          - audit-service
+          - card-service
+          - swift-service
+          - sepa-service
+          - security-service
+          - loan-service
+          - crypto-service
+          - crm-service
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install pip-audit
+        run: pip install pip-audit
+
+      - name: 🔍 Scan dependencies for known vulnerabilities
+        working-directory: services/${{ matrix.service }}
+        run: pip-audit -r requirements.txt --desc
+
   build:
     name: 🐳 Build Docker Images
     runs-on: ubuntu-latest
