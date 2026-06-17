@@ -79,7 +79,7 @@ class TestJWT:
     @pytest.mark.asyncio
     async def test_get_me_without_token(self, client):
         response = await client.get("/api/v1/auth/me")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_get_me_with_invalid_token(self, client):

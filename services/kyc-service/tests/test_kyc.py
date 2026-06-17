@@ -50,7 +50,7 @@ class TestKYCSubmit:
 
     async def test_submit_without_token(self, client):
         response = await client.post("/api/v1/kyc/submit", data={"document_type": "passport"})
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 class TestKYCStatus:

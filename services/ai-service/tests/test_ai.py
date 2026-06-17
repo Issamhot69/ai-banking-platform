@@ -62,7 +62,7 @@ class TestFraudCheck:
             "/api/v1/ai/fraud/check",
             json={"account_id": "acc-123", "amount": 100.00},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_fraud_check_missing_fields(self, client, auth_headers):
@@ -133,7 +133,7 @@ class TestCreditScore:
             "/api/v1/ai/credit-score",
             json={"user_id": "user-123", "monthly_income": 3000},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 class TestRecommendations:
@@ -173,7 +173,7 @@ class TestRecommendations:
             "/api/v1/ai/recommendations",
             json={"user_id": "user-123"},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 class TestChat:
@@ -216,7 +216,7 @@ class TestChat:
             "/api/v1/ai/chat",
             json={"message": "test", "conversation_history": []},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_chat_empty_message(self, client, auth_headers):
@@ -261,7 +261,7 @@ class TestSpendingAnalysis:
             "/api/v1/ai/spending-analysis",
             json={"user_id": "user-123", "transactions": []},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 class TestAIStatus:

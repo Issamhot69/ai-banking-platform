@@ -50,9 +50,47 @@ def create_test_token(user_id: str = TEST_USER_ID, email: str = "test@bank.com")
 @pytest.fixture(autouse=True, scope="session")
 async def create_tables():
     async with test_engine.begin() as conn:
+        # -- ROBUST USERS+ACCOUNTS SETUP --
+        await conn.execute(text("DROP TABLE IF EXISTS accounts CASCADE"))
+        await conn.execute(text("DROP TABLE IF EXISTS users CASCADE"))
+        await conn.execute(text(
+            "CREATE TABLE IF NOT EXISTS users ("
+            "id UUID PRIMARY KEY, "
+            "email VARCHAR(255) UNIQUE NOT NULL, "
+            "phone VARCHAR(20), "
+            "password_hash VARCHAR(255) NOT NULL, "
+            "first_name VARCHAR(100), "
+            "last_name VARCHAR(100), "
+            "date_of_birth DATE, "
+            "national_id VARCHAR(50), "
+            "is_active BOOLEAN DEFAULT true, "
+            "is_verified BOOLEAN DEFAULT false, "
+            "kyc_status VARCHAR(20) DEFAULT 'pending', "
+            "totp_secret VARCHAR(255), "
+            "is_2fa_enabled BOOLEAN DEFAULT false, "
+            "created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), "
+            "updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW())"
+        ))
+        await conn.execute(text(
+            "CREATE TABLE IF NOT EXISTS accounts ("
+            "id UUID PRIMARY KEY, "
+            "user_id UUID NOT NULL, "
+            "account_number VARCHAR(20) UNIQUE NOT NULL, "
+            "iban VARCHAR(34), "
+            "account_type VARCHAR(20) NOT NULL, "
+            "currency VARCHAR(3) NOT NULL, "
+            "balance NUMERIC(15,2) NOT NULL DEFAULT 0, "
+            "available_balance NUMERIC(15,2) NOT NULL DEFAULT 0, "
+            "status VARCHAR(20) NOT NULL DEFAULT 'active', "
+            "is_primary BOOLEAN NOT NULL DEFAULT false, "
+            "daily_transfer_limit NUMERIC(15,2) NOT NULL DEFAULT 10000, "
+            "monthly_transfer_limit NUMERIC(15,2) NOT NULL DEFAULT 50000, "
+            "created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), "
+            "updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW())"
+        ))
         await conn.run_sync(Base.metadata.create_all)
         await conn.execute(
-            text("INSERT INTO users (id, email) VALUES (:id, :email) ON CONFLICT (id) DO NOTHING"),
+            text("INSERT INTO users (id, email, password_hash, first_name, last_name, is_active, is_verified, kyc_status, is_2fa_enabled, created_at, updated_at) VALUES (:id, :email, 'testhash', 'Test', 'Account', true, true, 'pending', false, NOW(), NOW()) ON CONFLICT (id) DO NOTHING"),
             {"id": TEST_USER_ID, "email": "test@bank.com"}
         )
     yield

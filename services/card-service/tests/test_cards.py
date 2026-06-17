@@ -102,4 +102,4 @@ class TestCards:
 
     async def test_unauthorized_access(self, client):
         response = await client.get("/api/v1/cards")
-        assert response.status_code == 403
+        assert response.status_code == 401

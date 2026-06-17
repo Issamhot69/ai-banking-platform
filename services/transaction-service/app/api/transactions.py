@@ -5,6 +5,8 @@ from decimal import Decimal
 from typing import Optional
 import uuid
 
+import json
+from fastapi.responses import JSONResponse
 from app.core.database import get_db
 from app.core.redis import get_redis
 from app.core.kafka import publish_event
@@ -50,6 +52,23 @@ async def transfer(
     db: AsyncSession = Depends(get_db),
     redis: aioredis.Redis = Depends(get_redis),
 ):
+    idem_key = None
+    if payload.idempotency_key:
+        idem_key = f"idem:transfer:{current_user['id']}:{payload.idempotency_key}"
+        existing = await redis.get(idem_key)
+        if existing:
+            cached = json.loads(existing)
+            if cached["status"] == "processing":
+                raise HTTPException(status_code=409, detail="Une requête identique est déjà en cours de traitement, veuillez réessayer dans quelques secondes")
+            return JSONResponse(status_code=200, content=cached["result"])
+        acquired = await redis.set(idem_key, json.dumps({"status": "processing"}), nx=True, ex=30)
+        if not acquired:
+            existing = await redis.get(idem_key)
+            cached = json.loads(existing) if existing else None
+            if cached and cached.get("status") == "completed":
+                return JSONResponse(status_code=200, content=cached["result"])
+            raise HTTPException(status_code=409, detail="Une requête identique est déjà en cours de traitement, veuillez réessayer dans quelques secondes")
+
     from_account = await _get_account(payload.from_account_id, current_user["id"], db)
     to_account = await _get_account_any(payload.to_account_id, db)
 
@@ -113,6 +132,10 @@ async def transfer(
             "risk_score": fraud_result["risk_score"],
             "flags": fraud_result["flags"],
         })
+
+    if idem_key:
+        result_payload = TransactionResponse.model_validate(tx).model_dump(mode="json")
+        await redis.set(idem_key, json.dumps({"status": "completed", "result": result_payload}), ex=86400)
 
     return tx
 

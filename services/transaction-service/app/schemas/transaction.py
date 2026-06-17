@@ -11,6 +11,7 @@ class TransferRequest(BaseModel):
     amount: Decimal
     currency: str = "EUR"
     description: Optional[str] = None
+    idempotency_key: Optional[str] = None
 
     @field_validator("amount")
     @classmethod

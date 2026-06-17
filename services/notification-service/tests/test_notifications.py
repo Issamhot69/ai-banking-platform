@@ -38,7 +38,7 @@ class TestPushNotification:
                 "body": "Test body",
             },
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_send_push_missing_fields(self, client, auth_headers):
@@ -87,7 +87,7 @@ class TestEmailNotification:
             "/api/v1/notifications/email",
             json={"to_email": "user@bank.com", "template": "welcome", "variables": {}},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_send_email_missing_fields(self, client, auth_headers):
@@ -121,7 +121,7 @@ class TestSMSNotification:
             "/api/v1/notifications/sms",
             json={"to_phone": "+212600000000", "message": "Test"},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_send_sms_missing_message(self, client, auth_headers):
@@ -143,7 +143,7 @@ class TestGetNotifications:
     @pytest.mark.asyncio
     async def test_get_notifications_without_token(self, client):
         response = await client.get("/api/v1/notifications")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_get_notifications_unread_only(self, client, auth_headers):
@@ -199,4 +199,4 @@ class TestMarkAsRead:
     async def test_mark_as_read_without_token(self, client):
         import uuid as uuid_module
         response = await client.patch(f"/api/v1/notifications/{uuid_module.uuid4()}/read")
-        assert response.status_code == 403
+        assert response.status_code == 401

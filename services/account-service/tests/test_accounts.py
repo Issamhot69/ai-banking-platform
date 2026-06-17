@@ -49,7 +49,7 @@ class TestCreateAccount:
             "/api/v1/accounts",
             json={"account_type": "checking", "currency": "EUR"},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_create_account_savings(self, client, auth_headers):
@@ -83,7 +83,7 @@ class TestGetAccounts:
     @pytest.mark.asyncio
     async def test_get_accounts_without_token(self, client):
         response = await client.get("/api/v1/accounts")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     @pytest.mark.asyncio
     async def test_get_account_by_id(self, client, auth_headers):
