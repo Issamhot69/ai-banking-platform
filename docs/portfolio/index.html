@@ -202,6 +202,7 @@
     <div class="item"><h4>Real-world dependency constraint, handled honestly</h4><p>A 5th CVE (unbounded recursion in pyasn1) turned out to be blocked by python-jose's own version pin. Rather than force a broken build, documented the constraint and assessed actual exposure: low, since the app only uses HS256 symmetric signing, not the vulnerable ASN.1/JWE decode path.</p></div>
     <div class="item"><h4>Recurring transfers, fully automated</h4><p>Standing orders feature — create, pause, resume, cancel recurring payments at daily/weekly/monthly intervals. An APScheduler job checks for due orders every 60 seconds and executes them, advancing the next due date and recording a real transaction. 8 new tests, including a direct unit test of the scheduler logic itself.</p></div>
     <div class="item"><h4>Real-time multi-currency conversion</h4><p>Upgraded a static 8-currency rate table to live ECB reference rates via the Frankfurter API — 160+ currencies, hourly auto-refresh, transparent source/timestamp in the response, and graceful fallback to static rates if the external API is unreachable.</p></div>
+    <div class="item"><h4>Savings goals with automatic round-up</h4><p>Every transfer automatically rounds up to the nearest euro and credits the difference to a linked savings goal — verified live: a 23.40€ transfer triggered a 0.60€ round-up credited instantly. Goals support pause/resume/cancel, configurable multiples (1/5/10€), and a progress tracker toward optional targets.</p></div>
   </div>
 </section>
 
