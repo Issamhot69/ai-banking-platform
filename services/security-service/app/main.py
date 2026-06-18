@@ -45,9 +45,18 @@ app.include_router(security_router, prefix="/api/v1")
 
 @app.get("/health")
 async def health():
+    from sqlalchemy import text as sa_text
+    checks = {}
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(sa_text("SELECT 1"))
+        checks["database"] = "ok"
+    except Exception as e:
+        checks["database"] = f"error: {str(e)[:50]}"
+    overall = "ok" if all(v == "ok" for v in checks.values()) else "degraded"
     return {
-        "status": "ok",
+        "status": overall,
         "service": settings.APP_NAME,
         "version": settings.VERSION,
-        "features": ["rate_limiting", "ip_blocking", "security_events", "ddos_protection"],
+        "checks": checks,
     }

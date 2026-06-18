@@ -35,3 +35,19 @@ async def publish_pending_events():
 
         await db.commit()
         return len(events)
+
+# Métrique Prometheus pour surveiller l'outbox
+from prometheus_client import Gauge, Counter
+
+outbox_pending_gauge = Gauge(
+    'transaction_outbox_pending_events',
+    'Number of unpublished events in the outbox'
+)
+outbox_published_counter = Counter(
+    'transaction_outbox_published_total',
+    'Total events successfully published from outbox'
+)
+outbox_failed_counter = Counter(
+    'transaction_outbox_failed_total',
+    'Total events that failed to publish from outbox'
+)

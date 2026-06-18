@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.core.config import settings
+from sqlalchemy import text
 from app.core.database import engine, Base
 from app.core.redis import init_redis, close_redis
 from app.api.transactions import router as transactions_router
@@ -58,4 +59,45 @@ app.include_router(savings_goals_router, prefix="/api/v1/savings-goals")
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": settings.APP_NAME, "version": settings.VERSION}
+    from app.core.database import engine
+    from app.core.redis import get_redis
+    import asyncio
+
+    checks = {}
+
+    # DB check
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        checks["database"] = "ok"
+    except Exception as e:
+        checks["database"] = f"error: {str(e)[:50]}"
+
+    # Redis check
+    try:
+        r = await get_redis()
+        await r.ping()
+        checks["redis"] = "ok"
+    except Exception as e:
+        checks["redis"] = f"error: {str(e)[:50]}"
+
+    # Kafka check (connectivité basique)
+    try:
+        from kafka import KafkaAdminClient
+        admin = KafkaAdminClient(
+            bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+            request_timeout_ms=2000,
+        )
+        admin.close()
+        checks["kafka"] = "ok"
+    except Exception as e:
+        checks["kafka"] = f"error: {str(e)[:50]}"
+
+    overall = "ok" if all(v == "ok" for v in checks.values()) else "degraded"
+
+    return {
+        "status": overall,
+        "service": settings.APP_NAME,
+        "version": settings.VERSION,
+        "checks": checks,
+    }
