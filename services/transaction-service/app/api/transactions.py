@@ -18,6 +18,7 @@ from app.schemas.transaction import (
 )
 from app.utils.dependencies import get_current_user
 from app.utils.reference import generate_reference
+from app.models.savings_goal import SavingsGoal
 import redis.asyncio as aioredis
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
@@ -43,6 +44,66 @@ async def _get_account_any(account_id, db):
     if not row:
         raise HTTPException(status_code=404, detail="Compte destinataire introuvable")
     return row
+
+
+def _calculate_round_up(amount, multiple):
+    if multiple <= 0:
+        return Decimal("0.00")
+    remainder = amount % multiple
+    if remainder == 0:
+        return Decimal("0.00")
+    return (multiple - remainder).quantize(Decimal("0.01"))
+
+
+async def _process_round_up(db, account_id, amount, currency):
+    """Vérifie les objectifs d'épargne actifs liés à ce compte et y transfère
+    automatiquement l'arrondi. Ne lève jamais d'exception — un échec ici
+    ne doit jamais bloquer le virement principal déjà validé."""
+    try:
+        result = await db.execute(
+            select(SavingsGoal).where(
+                SavingsGoal.source_account_id == account_id,
+                SavingsGoal.status == "active",
+                SavingsGoal.round_up_enabled == True,
+            )
+        )
+        goals = result.scalars().all()
+
+        for goal in goals:
+            round_up = _calculate_round_up(amount, goal.round_up_multiple)
+            if round_up <= 0:
+                continue
+
+            await db.execute(
+                text("UPDATE accounts SET balance = balance - :amount, available_balance = available_balance - :amount, updated_at = NOW() WHERE id = :id"),
+                {"amount": float(round_up), "id": str(account_id)},
+            )
+            await db.execute(
+                text("UPDATE accounts SET balance = balance + :amount, available_balance = available_balance + :amount, updated_at = NOW() WHERE id = :id"),
+                {"amount": float(round_up), "id": str(goal.goal_account_id)},
+            )
+
+            round_up_tx = Transaction(
+                account_id=account_id,
+                to_account_id=goal.goal_account_id,
+                type="round_up",
+                amount=round_up,
+                currency=currency,
+                description=f"Arrondi automatique — {goal.name}",
+                reference=generate_reference("RND"),
+                status="completed",
+                risk_score=0,
+                fraud_flags=[],
+            )
+            db.add(round_up_tx)
+
+            goal.current_amount = goal.current_amount + round_up
+            goal.contribution_count += 1
+
+        await db.commit()
+    except Exception as e:
+        await db.rollback()
+        print(f"⚠️  Échec du traitement de l'arrondi (non bloquant): {e}")
 
 
 @router.post("/transfer", response_model=TransactionResponse, status_code=201)
@@ -112,6 +173,9 @@ async def transfer(
 
     await db.commit()
     await db.refresh(tx)
+
+    if not fraud_result["is_fraud"]:
+        await _process_round_up(db, payload.from_account_id, payload.amount, payload.currency)
 
     await publish_event("transaction.created", str(tx.id), {
         "event": "transaction.transfer",

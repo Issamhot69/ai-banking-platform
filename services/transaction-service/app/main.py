@@ -8,6 +8,7 @@ from app.core.database import engine, Base
 from app.core.redis import init_redis, close_redis
 from app.api.transactions import router as transactions_router
 from app.api.standing_orders import router as standing_orders_router
+from app.api.savings_goals import router as savings_goals_router
 from app.tasks.standing_orders import execute_due_standing_orders
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -49,6 +50,7 @@ app.add_middleware(
 Instrumentator().instrument(app).expose(app)
 app.include_router(transactions_router, prefix="/api/v1")
 app.include_router(standing_orders_router, prefix="/api/v1/standing-orders")
+app.include_router(savings_goals_router, prefix="/api/v1/savings-goals")
 
 
 @app.get("/health")
