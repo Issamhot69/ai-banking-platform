@@ -21,7 +21,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
           GoRoute(path: '/accounts', builder: (_, __) => const AccountsScreen()),
-          GoRoute(path: '/transactions', builder: (_, __) => const TransactionsScreen()),
+          GoRoute(path: '/transactions/:accountId', builder: (_, state) => TransactionsScreen(accountId: state.pathParameters['accountId']!)),
           GoRoute(path: '/transfer', builder: (_, __) => const TransferScreen()),
           GoRoute(path: '/cards', builder: (_, __) => const CardsScreen()),
           GoRoute(path: '/ai', builder: (_, __) => const AIAssistantScreen()),

@@ -78,11 +78,12 @@ class ApiService {
     return Account.fromJson(response.data);
   }
 
-  Future<Transaction> transfer({required String fromAccountId, required String toAccountId, required double amount, String currency = 'EUR', String? description}) async {
+  Future<Transaction> transfer({required String fromAccountId, required String toAccountId, required double amount, String currency = 'EUR', String? description, String? idempotencyKey}) async {
     final response = await _dio.post('/transactions/transfer', data: {
       'from_account_id': fromAccountId, 'to_account_id': toAccountId,
       'amount': amount, 'currency': currency,
       if (description != null) 'description': description,
+      if (idempotencyKey != null) 'idempotency_key': idempotencyKey,
     });
     return Transaction.fromJson(response.data);
   }

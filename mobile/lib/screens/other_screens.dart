@@ -5,6 +5,7 @@ import '../config/app_theme.dart';
 import '../services/api_service.dart';
 import '../services/biometric_service.dart';
 import '../models/models.dart';
+import 'package:uuid/uuid.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -100,7 +101,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
               Text('${_data?['total_accounts'] ?? 0} compte(s)', style: const TextStyle(color: Colors.white60)),
             ])),
             const SizedBox(height: 24),
-            ...accounts.map((a) => Container(margin: const EdgeInsets.only(bottom: 16), padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(20)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            ...accounts.map((a) => InkWell(onTap: () => context.go('/transactions/${a.id}'), borderRadius: BorderRadius.circular(20), child: Container(margin: const EdgeInsets.only(bottom: 16), padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(20)), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
                 Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.account_balance_wallet, color: AppColors.primary, size: 20)),
                 const SizedBox(width: 12),
@@ -111,7 +112,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
               const SizedBox(height: 16),
               Text(NumberFormat.currency(symbol: '€').format(a.balance), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               if (a.iban != null) Text('IBAN: ${a.iban}', style: const TextStyle(color: AppColors.textHint, fontSize: 12)),
-            ]))),
+            ])))),
           ])),
     );
   }
@@ -123,13 +124,96 @@ class _AccountsScreenState extends State<AccountsScreen> {
   ])));
 }
 
-class TransactionsScreen extends StatelessWidget {
-  const TransactionsScreen({super.key});
+class TransactionsScreen extends StatefulWidget {
+  final String accountId;
+  const TransactionsScreen({super.key, required this.accountId});
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Transactions')),
-    body: const Center(child: Text('Sélectionnez un compte', style: TextStyle(color: AppColors.textSecondary))),
-  );
+  State<TransactionsScreen> createState() => _TransactionsScreenState();
+}
+
+class _TransactionsScreenState extends State<TransactionsScreen> {
+  Map<String, dynamic>? _data;
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() { super.initState(); _load(); }
+
+  Future<void> _load() async {
+    setState(() { _loading = true; _error = null; });
+    try {
+      final data = await apiService.getTransactions(widget.accountId);
+      setState(() { _data = data; _loading = false; });
+    } catch (e) {
+      setState(() { _error = e.toString(); _loading = false; });
+    }
+  }
+
+  IconData _iconFor(String type) {
+    switch (type) {
+      case 'transfer': return Icons.swap_horiz_rounded;
+      case 'payment': return Icons.shopping_bag_outlined;
+      case 'deposit': return Icons.arrow_downward_rounded;
+      default: return Icons.receipt_long_outlined;
+    }
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case 'completed': return AppColors.success;
+      case 'pending': return AppColors.warning;
+      case 'reversed': return AppColors.textHint;
+      case 'flagged': return AppColors.error;
+      default: return AppColors.textSecondary;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final transactions = (_data?['transactions'] as List?)?.map((t) => Transaction.fromJson(t)).toList() ?? [];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Transactions')),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          : _error != null
+              ? Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+                  const SizedBox(height: 16),
+                  Text('Erreur: $_error', style: const TextStyle(color: AppColors.textSecondary), textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(onPressed: _load, child: const Text('Réessayer')),
+                ]))
+              : transactions.isEmpty
+                  ? const Center(child: Text('Aucune transaction', style: TextStyle(color: AppColors.textSecondary)))
+                  : RefreshIndicator(onRefresh: _load, child: ListView.builder(
+                      padding: const EdgeInsets.all(24),
+                      itemCount: transactions.length,
+                      itemBuilder: (context, index) {
+                        final tx = transactions[index];
+                        final isDebit = tx.accountId == widget.accountId;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(color: AppColors.card, borderRadius: BorderRadius.circular(16)),
+                          child: Row(children: [
+                            Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_iconFor(tx.type), color: AppColors.primary, size: 20)),
+                            const SizedBox(width: 12),
+                            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(tx.description ?? tx.reference ?? tx.type, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              const SizedBox(height: 4),
+                              Text(DateFormat('dd/MM/yyyy HH:mm').format(tx.createdAt), style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                            ])),
+                            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                              Text('${isDebit ? '-' : '+'}${NumberFormat.currency(symbol: '€').format(tx.amount)}', style: TextStyle(fontWeight: FontWeight.bold, color: isDebit ? AppColors.error : AppColors.success)),
+                              const SizedBox(height: 4),
+                              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: _statusColor(tx.status).withOpacity(0.1), borderRadius: BorderRadius.circular(8)), child: Text(tx.status, style: TextStyle(color: _statusColor(tx.status), fontSize: 10))),
+                            ]),
+                          ]),
+                        );
+                      },
+                    )),
+    );
+  }
 }
 
 class TransferScreen extends StatefulWidget {
@@ -140,6 +224,7 @@ class TransferScreen extends StatefulWidget {
 
 class _TransferScreenState extends State<TransferScreen> {
   final _fromCtrl = TextEditingController();
+  final String _idempotencyKey = const Uuid().v4();
   final _toCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
@@ -149,7 +234,7 @@ class _TransferScreenState extends State<TransferScreen> {
     if (_fromCtrl.text.isEmpty || _toCtrl.text.isEmpty || _amountCtrl.text.isEmpty) return;
     setState(() => _loading = true);
     try {
-      final tx = await apiService.transfer(fromAccountId: _fromCtrl.text.trim(), toAccountId: _toCtrl.text.trim(), amount: double.parse(_amountCtrl.text), description: _descCtrl.text);
+      final tx = await apiService.transfer(fromAccountId: _fromCtrl.text.trim(), toAccountId: _toCtrl.text.trim(), amount: double.parse(_amountCtrl.text), description: _descCtrl.text, idempotencyKey: _idempotencyKey);
       if (mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('✅ Virement ${tx.status}!'), backgroundColor: AppColors.success)); context.go('/home'); }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e'), backgroundColor: AppColors.error));
