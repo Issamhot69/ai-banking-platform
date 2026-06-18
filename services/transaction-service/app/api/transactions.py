@@ -26,7 +26,7 @@ router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 async def _get_account(account_id, user_id, db):
     result = await db.execute(
-        text("SELECT * FROM accounts WHERE id = :id AND user_id = :uid AND status = 'active'"),
+        text("SELECT * FROM accounts WHERE id = :id AND user_id = :uid AND status = 'active' FOR UPDATE"),
         {"id": str(account_id), "uid": str(user_id)},
     )
     row = result.mappings().first()
