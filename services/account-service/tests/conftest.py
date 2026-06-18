@@ -95,8 +95,8 @@ async def create_tables():
         )
     yield
     async with test_engine.begin() as conn:
-        await conn.execute(text("DROP TABLE IF EXISTS accounts CASCADE"))
-        await conn.execute(text("DROP TABLE IF EXISTS users CASCADE"))
+        await conn.execute(text("DELETE FROM accounts WHERE 1=1"))
+        await conn.execute(text("DELETE FROM users WHERE 1=1"))
 
 
 @pytest.fixture

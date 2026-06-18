@@ -62,13 +62,11 @@ async def create_tables():
     yield
     # Drop avec CASCADE
     async with test_engine.begin() as conn:
-        await conn.run_sync(
-            lambda sync_conn: sync_conn.execute(
-                __import__('sqlalchemy').text(
-                    "DROP TABLE IF EXISTS notifications, cards, transactions, accounts, users CASCADE"
-                )
-            )
-        )
+        await conn.execute(text("DELETE FROM notifications WHERE 1=1"))
+        await conn.execute(text("DELETE FROM cards WHERE 1=1"))
+        await conn.execute(text("DELETE FROM transactions WHERE 1=1"))
+        await conn.execute(text("DELETE FROM accounts WHERE 1=1"))
+        await conn.execute(text("DELETE FROM users WHERE 1=1"))
 
 
 @pytest.fixture
