@@ -198,6 +198,8 @@
     <div class="item"><h4>Load tested with k6</h4><p>30 concurrent virtual users against transaction-service's read path — zero failures, p95 latency 85ms (500ms threshold), 1938 requests served at 27.5 req/s.</p></div>
     <div class="item"><h4>Field-level encryption added</h4><p>Card numbers now encrypted at rest with Fernet, transparent to application code via a Python property — caught and reverted a regression where per-service JWT secrets broke cross-service auth.</p></div>
     <div class="item"><h4>AWS EKS Production — 4 pods Running</h4><p>auth, account, transaction, notification services running on real EKS nodes connected to RDS PostgreSQL with SSL — cleanly destroyed after validation.</p></div>
+    <div class="item"><h4>Automated dependency vulnerability scanning</h4><p>Added pip-audit to CI across all 14 services. Found and patched 4 real disclosed CVEs — a Starlette host-header URL confusion bug, a python-dotenv symlink rewrite flaw, a python-jose JWT decompression bomb, and two python-multipart parsing issues — each verified with full test suites before merging.</p></div>
+    <div class="item"><h4>Real-world dependency constraint, handled honestly</h4><p>A 5th CVE (unbounded recursion in pyasn1) turned out to be blocked by python-jose's own version pin. Rather than force a broken build, documented the constraint and assessed actual exposure: low, since the app only uses HS256 symmetric signing, not the vulnerable ASN.1/JWE decode path.</p></div>
   </div>
 </section>
 
