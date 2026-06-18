@@ -57,6 +57,27 @@ app.include_router(standing_orders_router, prefix="/api/v1/standing-orders")
 app.include_router(savings_goals_router, prefix="/api/v1/savings-goals")
 
 
+@app.get("/admin/dlq")
+async def get_dlq():
+    """Retourne les événements outbox en Dead Letter Queue — pour inspection et rejeu manuel."""
+    from app.tasks.outbox_publisher import get_dlq_events
+    events = await get_dlq_events()
+    return {
+        "count": len(events),
+        "events": [
+            {
+                "id": str(e.id),
+                "topic": e.topic,
+                "key": e.key,
+                "retry_count": e.retry_count,
+                "failed_at": e.failed_at.isoformat() if e.failed_at else None,
+                "created_at": e.created_at.isoformat(),
+            }
+            for e in events
+        ]
+    }
+
+
 @app.get("/health")
 async def health():
     from app.core.database import engine
