@@ -1,10 +1,14 @@
 import random
 import string
+import logging
+import httpx
 from decimal import Decimal
 from datetime import datetime, timezone
 from app.core.config import settings
 
-# Taux de change simulés (en production: API externe comme Open Exchange Rates)
+logger = logging.getLogger(__name__)
+
+# Taux de secours (utilisés si l'API externe est indisponible)
 EXCHANGE_RATES = {
     "EUR": Decimal("1.0"),
     "USD": Decimal("0.92"),
@@ -14,7 +18,57 @@ EXCHANGE_RATES = {
     "JPY": Decimal("0.0061"),
     "CAD": Decimal("0.68"),
     "AUD": Decimal("0.60"),
+    "AED": Decimal("0.25"),
 }
+
+RATES_LAST_UPDATED: datetime | None = None
+RATES_SOURCE = "fallback_static"
+
+FRANKFURTER_URL = "https://api.frankfurter.dev/v2/rates"
+
+
+async def refresh_exchange_rates() -> bool:
+    """Récupère les taux de change réels (BCE, via Frankfurter) et met à jour le cache en mémoire.
+    L'API renvoie une liste d'enregistrements {date, base, quote, rate} potentiellement sur
+    plusieurs dates — on ne garde que le taux le plus récent par devise.
+    En cas d'échec, conserve les derniers taux connus (statiques ou précédemment récupérés)."""
+    global RATES_LAST_UPDATED, RATES_SOURCE
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.get(FRANKFURTER_URL, params={"base": "EUR"})
+            response.raise_for_status()
+            data = response.json()
+
+        if not isinstance(data, list):
+            raise ValueError(f"Format de réponse inattendu: {type(data)}")
+
+        latest_date_per_currency: dict[str, str] = {}
+        rate_per_currency: dict[str, Decimal] = {}
+
+        for record in data:
+            quote = record.get("quote")
+            date = record.get("date")
+            rate = record.get("rate")
+            if not quote or date is None or rate is None:
+                continue
+            if quote not in latest_date_per_currency or date > latest_date_per_currency[quote]:
+                latest_date_per_currency[quote] = date
+                rate_per_currency[quote] = Decimal(str(rate))
+
+        if not rate_per_currency:
+            raise ValueError("Aucun taux exploitable dans la réponse")
+
+        EXCHANGE_RATES["EUR"] = Decimal("1.0")
+        for currency, rate in rate_per_currency.items():
+            EXCHANGE_RATES[currency] = rate
+
+        RATES_LAST_UPDATED = datetime.now(timezone.utc)
+        RATES_SOURCE = "frankfurter_ecb_live"
+        logger.info(f"Taux de change actualisés depuis Frankfurter ({len(rate_per_currency)} devises)")
+        return True
+    except Exception as e:
+        logger.warning(f"Échec de récupération des taux en direct, conservation des taux de secours: {e}")
+        return False
 
 # Temps de traitement estimé par pays
 PROCESSING_TIMES = {

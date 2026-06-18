@@ -17,13 +17,17 @@ from app.utils.swift_utils import (
 router = APIRouter(prefix="/swift", tags=["SWIFT Transfers"])
 
 
-@router.get("/rates", response_model=list[dict])
+@router.get("/rates", response_model=dict)
 async def get_exchange_rates():
-    from app.utils.swift_utils import EXCHANGE_RATES
-    return [
-        {"currency": currency, "rate_to_eur": str(rate)}
-        for currency, rate in EXCHANGE_RATES.items()
-    ]
+    from app.utils.swift_utils import EXCHANGE_RATES, RATES_LAST_UPDATED, RATES_SOURCE
+    return {
+        "source": RATES_SOURCE,
+        "last_updated": RATES_LAST_UPDATED.isoformat() if RATES_LAST_UPDATED else None,
+        "rates": [
+            {"currency": currency, "rate_to_eur": str(rate)}
+            for currency, rate in EXCHANGE_RATES.items()
+        ],
+    }
 
 
 @router.get("/rates/convert", response_model=ExchangeRateResponse)

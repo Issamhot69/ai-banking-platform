@@ -14,8 +14,10 @@ class TestExchangeRates:
     async def test_get_rates(self, client, auth_headers):
         response = await client.get("/api/v1/swift/rates", headers=auth_headers)
         assert response.status_code == 200
-        assert isinstance(response.json(), list)
-        assert len(response.json()) > 0
+        data = response.json()
+        assert "source" in data
+        assert isinstance(data["rates"], list)
+        assert len(data["rates"]) > 0
 
     async def test_convert_usd_to_eur(self, client, auth_headers):
         response = await client.get(

@@ -6,6 +6,8 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.core.config import settings
 from app.core.database import engine, Base
 from app.api.swift import router as swift_router
+from app.utils.swift_utils import refresh_exchange_rates
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
 @asynccontextmanager
@@ -15,8 +17,13 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(Base.metadata.create_all)
     except Exception as e:
         print(f"⚠️ DB init warning: {e}")
+    await refresh_exchange_rates()
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(refresh_exchange_rates, "interval", hours=1, id="refresh_rates")
+    scheduler.start()
     print(f"✅ {settings.APP_NAME} démarré")
     yield
+    scheduler.shutdown(wait=False)
     await engine.dispose()
 
 
