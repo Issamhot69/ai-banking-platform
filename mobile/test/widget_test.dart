@@ -8,7 +8,7 @@ import 'package:ai_banking/main.dart';
 void main() {
   testWidgets('App boots without crashing', (WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: BankingApp()));
-    await tester.pump();
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     // The app should render a MaterialApp at minimum.
     expect(find.byType(MaterialApp), findsOneWidget);
