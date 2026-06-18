@@ -10,6 +10,8 @@ from app.api.transactions import router as transactions_router
 from app.api.standing_orders import router as standing_orders_router
 from app.api.savings_goals import router as savings_goals_router
 from app.tasks.standing_orders import execute_due_standing_orders
+from app.tasks.outbox_publisher import publish_pending_events
+from app.models.outbox import OutboxEvent  # noqa: F401
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
@@ -23,6 +25,7 @@ async def lifespan(app: FastAPI):
     await init_redis()
     scheduler = AsyncIOScheduler()
     scheduler.add_job(execute_due_standing_orders, "interval", seconds=60, id="standing_orders")
+    scheduler.add_job(publish_pending_events, "interval", seconds=5, id="outbox_publisher")
     scheduler.start()
     print(f"✅ {settings.APP_NAME} démarré")
     yield

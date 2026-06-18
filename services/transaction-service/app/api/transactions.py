@@ -19,6 +19,7 @@ from app.schemas.transaction import (
 from app.utils.dependencies import get_current_user
 from app.utils.reference import generate_reference
 from app.models.savings_goal import SavingsGoal
+from app.utils.outbox import enqueue_event
 import redis.asyncio as aioredis
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
@@ -171,13 +172,7 @@ async def transfer(
             {"amount": float(payload.amount), "id": str(payload.to_account_id)},
         )
 
-    await db.commit()
-    await db.refresh(tx)
-
-    if not fraud_result["is_fraud"]:
-        await _process_round_up(db, payload.from_account_id, payload.amount, payload.currency)
-
-    await publish_event("transaction.created", str(tx.id), {
+    await enqueue_event(db, "transaction.created", str(tx.id), {
         "event": "transaction.transfer",
         "transaction_id": str(tx.id),
         "from_account": str(payload.from_account_id),
@@ -187,6 +182,12 @@ async def transfer(
         "status": tx.status,
         "risk_score": fraud_result["risk_score"],
     })
+
+    await db.commit()
+    await db.refresh(tx)
+
+    if not fraud_result["is_fraud"]:
+        await _process_round_up(db, payload.from_account_id, payload.amount, payload.currency)
 
     if fraud_result["is_fraud"]:
         await publish_event("fraud.detected", str(tx.id), {

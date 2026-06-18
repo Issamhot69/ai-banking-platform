@@ -25,6 +25,7 @@ import app.api.transactions as tx_module
 from app.models.transaction import Transaction  # noqa: F401
 from app.models.standing_order import StandingOrder  # noqa: F401
 from app.models.savings_goal import SavingsGoal  # noqa: F401
+from app.models.outbox import OutboxEvent  # noqa: F401
 
 DB_URL = os.environ["DATABASE_URL"]
 test_engine = create_async_engine(DB_URL, poolclass=NullPool)
