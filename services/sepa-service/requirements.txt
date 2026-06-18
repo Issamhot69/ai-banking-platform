@@ -13,3 +13,4 @@ kafka-python==2.0.2
 schwifty==2024.1.1.post0
 email-validator==2.1.1
 python-multipart==0.0.31
+pyasn1==0.6.3
