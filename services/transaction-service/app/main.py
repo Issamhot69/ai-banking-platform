@@ -7,6 +7,9 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.core.redis import init_redis, close_redis
 from app.api.transactions import router as transactions_router
+from app.api.standing_orders import router as standing_orders_router
+from app.tasks.standing_orders import execute_due_standing_orders
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
 @asynccontextmanager
@@ -17,8 +20,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️  Skipping create_all (tables managed externally): {e}")
     await init_redis()
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(execute_due_standing_orders, "interval", seconds=60, id="standing_orders")
+    scheduler.start()
     print(f"✅ {settings.APP_NAME} démarré")
     yield
+    scheduler.shutdown(wait=False)
     await close_redis()
     await engine.dispose()
 
@@ -41,6 +48,7 @@ app.add_middleware(
 
 Instrumentator().instrument(app).expose(app)
 app.include_router(transactions_router, prefix="/api/v1")
+app.include_router(standing_orders_router, prefix="/api/v1/standing-orders")
 
 
 @app.get("/health")
