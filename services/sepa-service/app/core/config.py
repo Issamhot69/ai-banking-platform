@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = "Bank SEPA Service"
@@ -17,9 +17,6 @@ class Settings(BaseSettings):
     SEPA_FEE_STANDARD: float = 0.50
     SEPA_FEE_INSTANT: float = 1.00
     SEPA_MAX_AMOUNT_INSTANT: float = 100000.00
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 settings = Settings()

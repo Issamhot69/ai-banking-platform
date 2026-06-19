@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -22,10 +22,7 @@ class Settings(BaseSettings):
     TWILIO_ACCOUNT_SID: str = "your_twilio_sid"
     TWILIO_AUTH_TOKEN: str = "your_twilio_token"
     TWILIO_FROM_NUMBER: str = "+1234567890"
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 
 settings = Settings()

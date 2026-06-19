@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -17,10 +17,7 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str = "supersecretkey_CHANGE_IN_PRODUCTION"
     ALGORITHM: str = "HS256"
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 
 settings = Settings()

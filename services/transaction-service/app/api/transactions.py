@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, text
 from decimal import Decimal
@@ -20,6 +20,7 @@ from app.utils.dependencies import get_current_user
 from app.utils.reference import generate_reference
 from app.models.savings_goal import SavingsGoal
 from app.utils.outbox import enqueue_event
+from app.utils.rate_limit import rate_limit
 import redis.asyncio as aioredis
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
@@ -109,11 +110,13 @@ async def _process_round_up(db, account_id, amount, currency):
 
 @router.post("/transfer", response_model=TransactionResponse, status_code=201)
 async def transfer(
+    request: Request,
     payload: TransferRequest,
     current_user: dict = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
     redis: aioredis.Redis = Depends(get_redis),
 ):
+    await rate_limit(request, redis, max_calls=10, window_seconds=60)
     idem_key = None
     if payload.idempotency_key:
         idem_key = f"idem:transfer:{current_user['id']}:{payload.idempotency_key}"

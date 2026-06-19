@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = "Bank Crypto Wallet Service"
@@ -14,9 +14,6 @@ class Settings(BaseSettings):
     SUPPORTED_CRYPTOS: list = ["BTC", "ETH", "USDT", "BNB", "SOL", "MAD_COIN"]
     TRANSACTION_FEE_PERCENT: float = 0.5
     MIN_TRANSACTION: float = 10.0
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 settings = Settings()

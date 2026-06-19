@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = "Bank KYC Service"
@@ -18,9 +18,6 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: list = ["jpg", "jpeg", "png", "pdf"]
 
     AUTH_SERVICE_URL: str = "http://auth-service:8000"
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 settings = Settings()

@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = "Bank Loan Service"
@@ -17,9 +17,6 @@ class Settings(BaseSettings):
     MIN_LOAN_TERM_MONTHS: int = 6
     MAX_LOAN_TERM_MONTHS: int = 84
     BASE_INTEREST_RATE: float = 5.0
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 settings = Settings()

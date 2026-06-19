@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -17,10 +17,7 @@ class Settings(BaseSettings):
     MAX_SINGLE_TRANSFER: float = 50000.00
     MAX_DAILY_TRANSFERS: int = 20
     FRAUD_AMOUNT_THRESHOLD: float = 10000.00
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 
 settings = Settings()

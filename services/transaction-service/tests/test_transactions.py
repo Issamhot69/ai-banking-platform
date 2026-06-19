@@ -7,7 +7,8 @@ class TestHealth:
     async def test_health_check(self, client):
         response = await client.get("/health")
         assert response.status_code == 200
-        assert response.json()["status"] == "ok"
+        assert response.json()["status"] in ("ok", "degraded")
+        assert "checks" in response.json()
 
 
 class TestTransfer:

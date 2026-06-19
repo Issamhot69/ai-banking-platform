@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = "Bank SWIFT Service"
@@ -18,9 +18,6 @@ class Settings(BaseSettings):
     SWIFT_FEE_PERCENTAGE: float = 0.5
     SWIFT_MIN_FEE: float = 15.0
     SWIFT_MAX_FEE: float = 50.0
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
 settings = Settings()
